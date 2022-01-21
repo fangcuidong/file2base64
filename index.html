@@ -76,7 +76,7 @@
   }
 
   function downloadBase64(content, fileName) {
-    let file = dataURLtoFile(content, fileName)
+    let file = dataURLtoFile(content, fileName);
     let aTag = document.createElement('a');//创建一个a标签
     aTag.download = file.name;
     let href = URL.createObjectURL(file);//获取url
