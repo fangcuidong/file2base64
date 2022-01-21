@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta name="description" content="在线Base64生成转换，可以实现文件转Base64，base64下载。" />
+  <meta name="keywords" content="base64, FileReader, readAsDataURL, 文件" />
+  <meta name="author" content="fcd" />
+  <title>File转base64 | Base64转File</title>
+  <style>
+    main {
+      width: 100%;
+      display: flex;
+    }
+
+    main>div {
+      flex: 1;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    h3 {
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <div>
+      <h3>File转Base64</h3>
+      <input type="file" m onchange="transformBase64(this)">
+      <textarea id="base64" rows="10"></textarea>
+    </div>
+    <div>
+      <h3>Base64转File</h3>
+      <button onclick="downloadBase64(dataurl.value)">下载</button>
+      <textarea id="dataurl" cols="30" rows="10"></textarea>
+      <p>在上方输入base64编码</p>
+    </div>
+  </main>
+</body>
+<script>
+
+  function transformBase64(input) {
+    console.log(input.files[0]);
+    blobToDataURL(input.files[0], (result) => {
+      base64.value = result;
+      base64.focus();
+      base64.select();
+    })
+  }
+  function blobToDataURL(blob, callback) {
+    let a = new FileReader();
+    a.onload = function (e) { callback(e.target.result); }
+    a.readAsDataURL(blob);
+  }
+
+  function dataURLtoFile(dataurl, filename = 'file') { //将base64转换为文件
+    var arr = dataurl.split(','),
+      mime = arr[0].match(/:(.*?);/)[1],
+      suffix = mime.split("/")[1];
+    bstr = atob(arr[1]),
+      n = bstr.length,
+      u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], `${filename}.${suffix}`, {
+      type: mime
+    });
+  }
+
+  function downloadBase64(content, fileName) {
+    let file = dataURLtoFile(content, fileName)
+    let aTag = document.createElement('a');//创建一个a标签
+    aTag.download = file.name;
+    let href = URL.createObjectURL(file);//获取url
+    aTag.href = href;
+    aTag.click();
+    URL.revokeObjectURL(href);//释放url
+  }
+</script>
+
+</html>
